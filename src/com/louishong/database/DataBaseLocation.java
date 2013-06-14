@@ -1,14 +1,13 @@
+package com.louishong.database;
+
 /**
- * Purpose: Declares where Databases are
+ * Declares where Databases are.
  * 
  * @author root
  * @version 1.0
  */
-
-package com.louishong.database;
-
 public class DataBaseLocation {
-	
+
 	final public static String profileURL = "jdbc:sqlite:/Users/honglouis/Documents/Github Repo/OICWebsite/database/Profiles.sqlite";
 
 	// Where the file is stored on The server

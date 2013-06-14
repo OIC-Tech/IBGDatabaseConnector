@@ -1,9 +1,3 @@
-/** Purpose: A wrapper for the connection with Profile database
- *
- * @author Louis Hong
- * @version 1.1
- */
-
 package com.louishong.database;
 
 import java.sql.ResultSet;
@@ -12,36 +6,75 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A wrapper for the connection with Profile table.
+ * 
+ * @author Louis Hong
+ * @version 1.1
+ */
 
 public class ProfileWrapper {
+	/**
+	 * The SQLite JDBC driver.
+	 */
 	public static String sDriver = "org.sqlite.JDBC";
 
+	/**
+	 * The URL of the Databases profiles.
+	 */
 	final public static String sUrl = DataBaseLocation.profileURL;
 
-	// Where the file is stored on The server
-	// final public static String profileURL =
-	// "jdbc:sqlite:C:\\OIC\\database\\Profiles.sqlite";
-
+	/**
+	 * The SQLBase used to the raw database.
+	 */
 	public static SQLiteBase sqlBase;
 
-	public ProfileWrapper() {
+	/**
+	 * Constructor that initializes SQLBase with default drivers and URL.
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 */
+	public ProfileWrapper() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		sqlBase = new SQLiteBase(sDriver, sUrl);
 	}
 
-	public ProfileWrapper(String driver, String url) {
+	/**
+	 * Constructor that initializes SQLBase with costume drivers and URL.
+	 * 
+	 * @param driver
+	 * @param url
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 */
+	public ProfileWrapper(String driver, String url) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		sqlBase = new SQLiteBase(driver, url);
 	}
 
 	/* ==========The Readers=========== */
+	/**
+	 * Used to get the entire Profiles table.
+	 * 
+	 * @return ResuldSet of the entire Profiles table.
+	 */
 	private ResultSet getProfiles() {
 		try {
-			return sqlBase.executeQuery("SELECT * FROM Profiles");
+			return sqlBase.fetchQuery("SELECT * FROM Profiles");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
 
+	/**
+	 * Searches and returns the points a user has in the table.
+	 * 
+	 * @param name
+	 * @return String of the points the user has.
+	 */
 	public String getUserPoint(String name) {
 		ResultSet results = getProfiles();
 
@@ -55,12 +88,17 @@ public class ProfileWrapper {
 				}
 			}
 		} catch (SQLException e) {
-
 			e.printStackTrace();
 		}
 		return null;
 	}
 
+	/**
+	 * Searches in the table for the users email.
+	 * 
+	 * @param name
+	 * @return String email of the user.
+	 */
 	public String getEmail(String name) {
 		ResultSet results = getProfiles();
 
@@ -74,12 +112,17 @@ public class ProfileWrapper {
 				}
 			}
 		} catch (SQLException e) {
-
 			e.printStackTrace();
 		}
 		return null;
 	}
 
+	/**
+	 * Searches for the existence of the user.
+	 * 
+	 * @param name
+	 * @return <boolean>boolean true for exists false for doesn't exists.
+	 */
 	public Boolean hasUser(String name) {
 		ResultSet results = getProfiles();
 
@@ -98,6 +141,12 @@ public class ProfileWrapper {
 		return false;
 	}
 
+	/**
+	 * Searches in the table for the users job.
+	 * 
+	 * @param name
+	 * @return Stringthe users job.
+	 */
 	public String getUserJob(String name) {
 		ResultSet results = getProfiles();
 
@@ -117,6 +166,12 @@ public class ProfileWrapper {
 		return null;
 	}
 
+	/**
+	 * Searches in the table for the users phone number.
+	 * 
+	 * @param name
+	 * @return String containing the users phone number.
+	 */
 	public String getUserPhone(String name) {
 		ResultSet results = getProfiles();
 
@@ -136,6 +191,12 @@ public class ProfileWrapper {
 		return null;
 	}
 
+	/**
+	 * Gives a 3 dimensional Map of the Profiles table.
+	 * 
+	 * @return Map<String, ArralyList<String>> with the names in the key and all
+	 *         the information in the ArrayList.
+	 */
 	public Map<String, ArrayList<String>> getUserList() {
 		ResultSet results = getProfiles();
 

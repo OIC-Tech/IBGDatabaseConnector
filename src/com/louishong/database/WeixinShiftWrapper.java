@@ -8,35 +8,84 @@ import java.util.Iterator;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 
+/**
+ * To get peoples Weixin News shift data
+ * 
+ * @author Louis Hong
+ * @version 1.0
+ */
 public class WeixinShiftWrapper {
 
+	/**
+	 * The SQLite JDBC driver.
+	 */
 	public static String sDriver = "org.sqlite.JDBC";
 
+	/**
+	 * The URL of the Databases profiles.
+	 */
 	final public static String sUrl = DataBaseLocation.profileURL;
 
-	// Where the file is stored on The server
-	// final public static String profileURL =
-	// "jdbc:sqlite:C:\\OIC\\database\\Profiles.sqlite";
-
+	/**
+	 * The SQLBase used to the raw database.
+	 */
 	public static SQLiteBase sqlBase;
-	
-	public WeixinShiftWrapper() {
+
+	/**
+	 * Constructor that initializes SQLBase with default drivers and URL.
+	 * 
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 */
+	public WeixinShiftWrapper() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		sqlBase = new SQLiteBase(sDriver, sUrl);
 	}
-	
-	public WeixinShiftWrapper(String driver, String url) {
+
+	/**
+	 * Constructor that initializes SQLBase with costume drivers and URL.
+	 * 
+	 * @param driver
+	 * @param url
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 */
+	public WeixinShiftWrapper(String driver, String url) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		sqlBase = new SQLiteBase(driver, url);
 	}
 
+	/**
+	 * Gets the whole WeixinShift table from the database.
+	 * 
+	 * @return ResultSet from the WeixinShift table.
+	 * @throws SQLException
+	 */
 	public ResultSet getWeixinShift() throws SQLException {
-		return sqlBase.executeQuery("SELECT * FROM WeixinShift");
+		return sqlBase.fetchQuery("SELECT * FROM WeixinShift");
 	}
 
+	/**
+	 * Converts date from formatted String to LocalDate.
+	 * 
+	 * @param stringDate
+	 * @return LocalDate
+	 */
 	public LocalDate dateConverter(String stringDate) {
 		String dateFormatter = "yy-MM-dd";
 		return LocalDate.parse(stringDate, DateTimeFormat.forPattern(dateFormatter));
 	}
 
+	/**
+	 * Get's all the shifts that the user has.
+	 * 
+	 * @param name
+	 * @return ArralyList<LocalDate>
+	 * @throws SQLException
+	 * @throws NullPointerException
+	 */
 	public ArrayList<LocalDate> getNextShifts(String name) throws SQLException, NullPointerException {
 		ResultSet results = getWeixinShift();
 		ArrayList<LocalDate> weixinShifts = new ArrayList<LocalDate>();
@@ -55,6 +104,14 @@ public class WeixinShiftWrapper {
 		return weixinShifts;
 	}
 
+	/**
+	 * Checking if the users shift is days after or days before the current
+	 * date.
+	 * 
+	 * @param name
+	 * @param days
+	 * @return boolean of if shift is days after or before.
+	 */
 	public boolean isShiftDaysAfter(String name, int days) {
 		LocalDate today = new LocalDate();
 		today = today.plusDays(days);
@@ -78,15 +135,25 @@ public class WeixinShiftWrapper {
 		return false;
 	}
 
-	public void setWeixinShift(String name, LocalDate oldDate, LocalDate newDate) {
-		// String stringNewDate = dateFormatter(newDate);
-		// String stringOldDate = dateFormatter(oldDate);
-		try {
-			sqlBase.executeQuery(String.format("UPDATE WeixinShift SET NextShift='%s' WHERE ChineseName='%s' AND NextShift='%s'", newDate, name, oldDate));
-		} catch (SQLException e) {
-		}
+	/**
+	 * Changes the users shift from oldDate to newDate
+	 * 
+	 * @param name
+	 * @param oldDate
+	 * @param newDate
+	 * @throws SQLException
+	 */
+	public void setWeixinShift(String name, String oldDate, String newDate) throws SQLException {
+		sqlBase.executeQueryPrepared("UPDATE WeixinShift SET NextShift=? WHERE ChineseName=? AND NextShift=?", newDate, name, oldDate);
 	}
 
+	/**
+	 * Loops through the whole database checking for outdated shift dates. If an
+	 * outdated shift is spotted then the method will add the period to the
+	 * shift date until the date is before the current date.
+	 * 
+	 * @throws SQLException
+	 */
 	public void updateDatebase() throws SQLException {
 		ResultSet results = getWeixinShift();
 
@@ -106,7 +173,7 @@ public class WeixinShiftWrapper {
 			}
 
 			while (nextShift.isBefore(today)) {
-				setWeixinShift(results.getString("ChineseName"), nextShift, nextShift.plusDays(shiftPeriod));
+				setWeixinShift(results.getString("ChineseName"), nextShift.toString(), nextShift.plusDays(shiftPeriod).toString());
 				nextShift = nextShift.plusDays(shiftPeriod);
 				System.out.println("......Updated Shift");
 				continue resultLoop;
