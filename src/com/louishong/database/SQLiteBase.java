@@ -39,7 +39,9 @@ public class SQLiteBase {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public SQLiteBase(String stringDriver, String stringUrl) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public SQLiteBase(String stringDriver, String stringUrl)
+			throws InstantiationException, IllegalAccessException,
+			ClassNotFoundException, SQLException {
 
 		sDriver = stringDriver;
 		sUrl = stringUrl;
@@ -60,7 +62,8 @@ public class SQLiteBase {
 	 * @throws InstantiationException
 	 * @throws SQLException
 	 */
-	public void setDriver(String driver) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public void setDriver(String driver) throws InstantiationException,
+			IllegalAccessException, ClassNotFoundException, SQLException {
 		// Register Driver #1
 		Driver d = (Driver) Class.forName(driver).newInstance();
 		DriverManager.registerDriver(d);
@@ -76,7 +79,6 @@ public class SQLiteBase {
 		try {
 			con = DriverManager.getConnection(sUrl);
 		} catch (SQLException e) {
-			con.close();
 			throw (e);
 		}
 	}
@@ -116,7 +118,8 @@ public class SQLiteBase {
 	 * @return ResultSet containing the results of the executed statement.
 	 * @throws SQLException
 	 */
-	public ResultSet fetchQueryPrepared(String sql, String... params) throws SQLException {
+	public ResultSet fetchQueryPrepared(String sql, String... params)
+			throws SQLException {
 
 		// Execute SQL Query using Statement object
 		PreparedStatement stmt = con.prepareStatement(sql);
@@ -152,7 +155,8 @@ public class SQLiteBase {
 	 * @param params
 	 * @throws SQLException
 	 */
-	public void executeQueryPrepared(String sql, String... params) throws SQLException {
+	public void executeQueryPrepared(String sql, String... params)
+			throws SQLException {
 
 		// Execute SQL Query using Statement object
 		PreparedStatement stmt = con.prepareStatement(sql);
