@@ -1,5 +1,6 @@
 package com.louishong.database;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -12,10 +13,6 @@ import java.sql.SQLException;
 
 public class IBGWeixinServerResponseDatabase {
 
-	// JDBC Driver
-	public static String sDriver = "org.sqlite.JDBC";
-	// Database URL location
-	final public static String sUrl = DataBaseLocation.responsesURL;
 	// SQL base declare
 	public static SQLiteBase sqlBase;
 
@@ -26,10 +23,15 @@ public class IBGWeixinServerResponseDatabase {
 	 * @throws ClassNotFoundException
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
+	 * @throws IOException 
 	 * 
 	 * @see SQLiteBase
 	 */
-	public IBGWeixinServerResponseDatabase() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public IBGWeixinServerResponseDatabase() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
+		// JDBC Driver
+		String sDriver = "org.sqlite.JDBC";
+		// Database URL location
+		final String sUrl = DatabaseLocation.getResponsesURL();
 		sqlBase = new SQLiteBase(sDriver, sUrl);
 	}
 

@@ -1,5 +1,6 @@
 package com.louishong.database;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -16,15 +17,6 @@ import org.joda.time.format.DateTimeFormat;
  */
 public class WeixinShiftWrapper {
 
-	/**
-	 * The SQLite JDBC driver.
-	 */
-	public static String sDriver = "org.sqlite.JDBC";
-
-	/**
-	 * The URL of the Databases profiles.
-	 */
-	final public static String sUrl = DataBaseLocation.profileURL;
 
 	/**
 	 * The SQLBase used to the raw database.
@@ -38,8 +30,15 @@ public class WeixinShiftWrapper {
 	 * @throws ClassNotFoundException
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
+	 * @throws IOException 
 	 */
-	public WeixinShiftWrapper() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public WeixinShiftWrapper() throws InstantiationException,
+			IllegalAccessException, ClassNotFoundException, SQLException, IOException {
+
+		//The SQLite JDBC driver.
+		String sDriver = "org.sqlite.JDBC";
+		//The URL of the Databases profiles.
+		final String sUrl = DatabaseLocation.getProfileURL();
 		sqlBase = new SQLiteBase(sDriver, sUrl);
 	}
 
@@ -53,7 +52,9 @@ public class WeixinShiftWrapper {
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	public WeixinShiftWrapper(String driver, String url) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public WeixinShiftWrapper(String driver, String url)
+			throws InstantiationException, IllegalAccessException,
+			ClassNotFoundException, SQLException {
 		sqlBase = new SQLiteBase(driver, url);
 	}
 
@@ -100,7 +101,6 @@ public class WeixinShiftWrapper {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
 		return weixinShifts;
 	}
 
@@ -157,7 +157,7 @@ public class WeixinShiftWrapper {
 	public void updateDatebase() throws SQLException {
 		ResultSet results = getWeixinShift();
 
-		resultLoop: while (results.next()) {
+		resultLoop : while (results.next()) {
 			System.out.print("[" + results.getString("ChineseName") + "]");
 
 			LocalDate today = new LocalDate();

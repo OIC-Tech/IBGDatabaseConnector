@@ -1,5 +1,6 @@
 package com.louishong.test;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -27,6 +28,8 @@ public class _TestProfile {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 

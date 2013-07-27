@@ -1,5 +1,6 @@
 package com.louishong.database;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -14,29 +15,36 @@ import java.util.Map;
  */
 
 public class ProfileWrapper {
-	/**
-	 * The SQLite JDBC driver.
-	 */
-	public static String sDriver = "org.sqlite.JDBC";
-
-	/**
-	 * The URL of the Databases profiles.
-	 */
-	final public static String sUrl = DataBaseLocation.profileURL;
 
 	/**
 	 * The SQLBase used to the raw database.
 	 */
 	public static SQLiteBase sqlBase;
+	private static String sUrl = null;
+	static {
+		try {
+			sUrl = DatabaseLocation.getProfileURL();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Constructor that initializes SQLBase with default drivers and URL.
-	 * @throws SQLException 
-	 * @throws ClassNotFoundException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * 
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 * @throws IOException
 	 */
-	public ProfileWrapper() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public ProfileWrapper() throws InstantiationException,
+			IllegalAccessException, ClassNotFoundException, SQLException,
+			IOException {
+
+		// The SQLite JDBC driver.
+		String sDriver = "org.sqlite.JDBC";
+		// The URL of the Databases profiles.
 		sqlBase = new SQLiteBase(sDriver, sUrl);
 	}
 
@@ -45,12 +53,14 @@ public class ProfileWrapper {
 	 * 
 	 * @param driver
 	 * @param url
-	 * @throws SQLException 
-	 * @throws ClassNotFoundException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
-	public ProfileWrapper(String driver, String url) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	public ProfileWrapper(String driver, String url)
+			throws InstantiationException, IllegalAccessException,
+			ClassNotFoundException, SQLException {
 		sqlBase = new SQLiteBase(driver, url);
 	}
 

@@ -1,5 +1,6 @@
 package com.louishong.test;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 import com.louishong.database.IBGWeixinServerResponseDatabase;
@@ -24,6 +25,8 @@ public class _TestResponseDatabase {
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 

@@ -1,5 +1,6 @@
 package com.louishong.test;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -39,6 +40,8 @@ public class _TestWeixinShiftWrapper {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
 
 	}
