@@ -14,9 +14,10 @@ public class _TestResponseDatabase {
 	public static void main(String[] args) {
 		try {
 			IBGWeixinServerResponseDatabase ibgResponseDB = new IBGWeixinServerResponseDatabase();
-			System.out.println(ibgResponseDB.searchResponse("今天谁做微报").getString("Responses"));
-			System.out.println(ibgResponseDB.searchResponse("今天谁做微报").getString("Responses"));
-			ibgResponseDB.cutConnection();
+//			ibgResponseDB.addResponse("震惊了", "对啊，当时我也震惊了");
+//			System.out.println(ibgResponseDB.searchResponse("震惊了").getString("Responses"));
+			System.out.println(ibgResponseDB.isUnique("你好", "你好呀~", false));
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("False Input!");

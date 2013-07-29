@@ -23,7 +23,7 @@ public class IBGWeixinServerResponseDatabase {
 	 * @throws ClassNotFoundException
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
-	 * @throws IOException 
+	 * @throws IOException
 	 * 
 	 * @see SQLiteBase
 	 */
@@ -82,10 +82,21 @@ public class IBGWeixinServerResponseDatabase {
 	 * 
 	 * @throws SQLException
 	 */
+
+	/* ==========The Writers=========== */
+
+	public void addResponse(String input, String response) throws SQLException {
+		sqlBase.executeQueryPrepared("INSERT INTO Responses (Inputs, Responses, Dynamic) VALUES (?, ?, ?)", input, response, "0");
+	}
+
+	/* ==========Utilities=========== */
+	public boolean isUnique(String input, String response, boolean dynamic) throws SQLException {
+		ResultSet results = sqlBase.fetchQueryPrepared("SELECT * FROM Responses WHERE Inputs=? AND Responses=? AND Dynamic=?", input, response, dynamic ? "1" : "0");
+		return !results.next();
+	}
+
 	public void cutConnection() throws SQLException {
 		sqlBase.cutConnection();
 	}
-
-	/* ==========The Writers=========== */
 
 }
