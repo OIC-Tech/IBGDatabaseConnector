@@ -1,49 +1,51 @@
 package com.louishong.test;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Date;
+
 
 import org.joda.time.LocalDate;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.louishong.database.WeixinShiftWrapper;
 
 public class _TestWeixinShiftWrapper {
 
-	/**
-	 * @param args
-	 * @throws SQLException
-	 */
-	public static void main(String[] args) throws SQLException {
+	private static WeixinShiftWrapper shiftWrapper;
+
+	@Before
+	public void testInit() {
 		try {
-			WeixinShiftWrapper weixinShift;
-			weixinShift = new WeixinShiftWrapper();
-//			System.out.println(weixinShift.getWeixinShift());
-
-			LocalDate oldDate = LocalDate.parse("2013-06-07");
-			LocalDate today = LocalDate.now();
-			weixinShift.setWeixinShift("Áõ¼Ó»ª", oldDate.toString(),
-					today.toString());
-			ResultSet results = weixinShift.getWeixinShift();
-			while (results.next()) {
-				System.out.println(results.getString("ChineseName"));
-				try {
-					System.out.println(weixinShift.getNextShifts(results
-							.getString("ChineseName")));
-				} catch (NullPointerException e) {
-					System.out.println("[No Shifts]");
-				}
-			}
-		} catch (InstantiationException e) {
+			shiftWrapper = new WeixinShiftWrapper();
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
 		}
-
+	}
+	
+	@Test
+	public void testGetNextShifts() throws NullPointerException, SQLException { 
+		System.out.println(shiftWrapper.getNextShifts(33));
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testSetWeixinShift() throws SQLException {
+		Date oldDate = new Date(90, 0, 1);
+		Date newDate= new Date(113, 4, 1);
+		System.out.println(oldDate);
+		System.out.println(newDate);
+		shiftWrapper.setWeixinShift(33, oldDate, newDate);
+		assertFalse("ShiftDate did not change", oldDate.toString().equals(shiftWrapper.getNextShifts(33)));
+		shiftWrapper.setWeixinShift(33, newDate, oldDate);
+	}
+	
+	@Test
+	public void testUpdateDatabase() throws SQLException { 
+		shiftWrapper.updateDatebase();
 	}
 
 }

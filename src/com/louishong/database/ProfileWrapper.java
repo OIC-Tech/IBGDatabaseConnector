@@ -1,11 +1,14 @@
 package com.louishong.database;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidParameterException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * A wrapper for the connection with Profile table.
@@ -19,11 +22,11 @@ public class ProfileWrapper {
 	/**
 	 * The SQLBase used to the raw database.
 	 */
-	public static SQLiteBase sqlBase;
+	public static SQLBase sqlBase;
 	private static String sUrl = null;
 	static {
 		try {
-			sUrl = DatabaseLocation.getProfileURL();
+			sUrl = DatabaseURL.getProfileURL();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -38,14 +41,12 @@ public class ProfileWrapper {
 	 * @throws InstantiationException
 	 * @throws IOException
 	 */
-	public ProfileWrapper() throws InstantiationException,
-			IllegalAccessException, ClassNotFoundException, SQLException,
-			IOException {
+	public ProfileWrapper() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
 
 		// The SQLite JDBC driver.
-		String sDriver = "org.sqlite.JDBC";
+		String sDriver = "com.mysql.jdbc.Driver";
 		// The URL of the Databases profiles.
-		sqlBase = new SQLiteBase(sDriver, sUrl);
+		sqlBase = new SQLBase(sDriver, sUrl);
 	}
 
 	/**
@@ -58,49 +59,45 @@ public class ProfileWrapper {
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	public ProfileWrapper(String driver, String url)
-			throws InstantiationException, IllegalAccessException,
-			ClassNotFoundException, SQLException {
-		sqlBase = new SQLiteBase(driver, url);
+	public ProfileWrapper(String driver, String url) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		sqlBase = new SQLBase(driver, url);
 	}
 
 	/* ==========The Readers=========== */
 	/**
 	 * Used to get the entire Profiles table.
 	 * 
-	 * @return ResuldSet of the entire Profiles table.
+	 * @return ResuldSet of the ENTIRE Profiles table.
+	 * @throws SQLException
+	 * @throws Exception
 	 */
-	private ResultSet getProfiles() {
-		try {
-			return sqlBase.fetchQuery("SELECT * FROM Profiles");
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
+	private ResultSet getAllProfiles(int length, int page) throws InvalidParameterException, SQLException {
+		if (page == 0) {
+			throw new InvalidParameterException("Cannot have page number lower then 1");
 		}
+		return sqlBase.fetchQuery(String.format("SELECT * FROM Profile LIMIT %s, %s", length * (page - 1), length));
+	}
+	
+	public ResultSet searchProfile(String name) throws SQLException {
+		return searchProfile(name);
 	}
 
+	public ResultSet searchProfile(int UID) throws SQLException {
+		return sqlBase.fetchQueryPrepared("SELECT * FROM Profile WHERE UID=i?", new Integer(UID).toString());
+	}
+	
 	/**
 	 * Searches and returns the points a user has in the table.
 	 * 
 	 * @param name
 	 * @return String of the points the user has.
+	 * @throws SQLException
+	 * @throws UnsupportedEncodingException
 	 */
-	public String getUserPoint(String name) {
-		ResultSet results = getProfiles();
-
-		String resultName;
-		try {
-
-			while (results.next()) {
-				resultName = results.getString("ChineseName");
-				if (resultName.equals(name)) {
-					return results.getString("UserPoints");
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
+	public int getPoints(String name) throws SQLException, UnsupportedEncodingException {
+		ResultSet results = searchProfile(name);
+		results.next();
+		return results.getInt("Points");
 	}
 
 	/**
@@ -108,23 +105,12 @@ public class ProfileWrapper {
 	 * 
 	 * @param name
 	 * @return String email of the user.
+	 * @throws SQLException
 	 */
-	public String getEmail(String name) {
-		ResultSet results = getProfiles();
-
-		String resultName;
-		try {
-
-			while (results.next()) {
-				resultName = results.getString("ChineseName");
-				if (resultName.equals(name)) {
-					return results.getString("Email");
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
+	public String getEmail(String name) throws SQLException {
+		ResultSet results = searchProfile(name);
+		results.next();
+		return results.getString("Email");
 	}
 
 	/**
@@ -132,23 +118,11 @@ public class ProfileWrapper {
 	 * 
 	 * @param name
 	 * @return <boolean>boolean true for exists false for doesn't exists.
+	 * @throws SQLException
 	 */
-	public Boolean hasUser(String name) {
-		ResultSet results = getProfiles();
-
-		String resultName;
-		try {
-
-			while (results.next()) {
-				resultName = results.getString("ChineseName");
-				if (resultName.equals(name)) {
-					return true;
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return false;
+	public Boolean hasUser(String name) throws SQLException {
+		ResultSet results = searchProfile(name);
+		return results.next();
 	}
 
 	/**
@@ -156,24 +130,12 @@ public class ProfileWrapper {
 	 * 
 	 * @param name
 	 * @return Stringthe users job.
+	 * @throws SQLException
 	 */
-	public String getUserJob(String name) {
-		ResultSet results = getProfiles();
-
-		String resultName;
-		try {
-
-			while (results.next()) {
-				resultName = results.getString("ChineseName");
-				if (resultName.equals(name)) {
-
-					return results.getString("UserJob");
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
+	public String getJob(String name) throws SQLException {
+		ResultSet results = searchProfile(name);
+		results.next();
+		return results.getString("Job");
 	}
 
 	/**
@@ -181,24 +143,12 @@ public class ProfileWrapper {
 	 * 
 	 * @param name
 	 * @return String containing the users phone number.
+	 * @throws SQLException
 	 */
-	public String getUserPhone(String name) {
-		ResultSet results = getProfiles();
-
-		String resultName;
-		try {
-
-			while (results.next()) {
-				resultName = results.getString("ChineseName");
-				if (resultName.equals(name)) {
-
-					return results.getString("UserPhone");
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
+	public String getPhoneNumber(String name) throws SQLException {
+		ResultSet results = searchProfile(name);
+		results.next();
+		return results.getString("PhoneNumber");
 	}
 
 	/**
@@ -206,29 +156,107 @@ public class ProfileWrapper {
 	 * 
 	 * @return Map<String, ArralyList<String>> with the names in the key and all
 	 *         the information in the ArrayList.
+	 * @throws SQLException
+	 * @throws InvalidParameterException
 	 */
-	public Map<String, ArrayList<String>> getUserList() {
-		ResultSet results = getProfiles();
+	public Map<String, ArrayList<String>> getUserList(int length, int page) throws InvalidParameterException, SQLException {
+		ResultSet results = getAllProfiles(length, page);
 
-		try {
-			Map<String, ArrayList<String>> mapResults = new HashMap<String, ArrayList<String>>();
-			ArrayList<String> data = new ArrayList<String>();
-			while (results.next()) {
-				data.clear();
-				data.add(results.getString("UserJob"));
-				data.add(results.getString("Email"));
-				data.add(results.getString("UserPoints"));
-				data.add(results.getString("UserPhone"));
-				mapResults.put(results.getString("ChineseName"), new ArrayList<String>(data));
+		Map<String, ArrayList<String>> mapResults = new HashMap<String, ArrayList<String>>();
+		ArrayList<String> data = new ArrayList<String>();
+		while (results.next()) {
+			data.clear();
+			data.add(results.getString("Job"));
+			data.add(results.getString("Email"));
+			data.add(results.getString("Points"));
+			data.add(results.getString("PhoneNumber"));
+			if (mapResults.containsKey(results.getString("Name"))) {
+				mapResults.put(results.getString("Name") + "_" + new Random().nextInt(), new ArrayList<String>(data));
 			}
-			return mapResults;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
+			mapResults.put(results.getString("Name"), new ArrayList<String>(data));
 		}
+		return mapResults;
 
 	}
 
+	/**
+	 * Searches and returns the points a user has in the table.
+	 * 
+	 * @param UID
+	 * @return String of the points the user has.
+	 * @throws SQLException
+	 * @throws UnsupportedEncodingException
+	 */
+	public int getPoints(int UID) throws SQLException, UnsupportedEncodingException {
+		ResultSet results = sqlBase.fetchQueryPrepared("SELECT * FROM Profile WHERE UID=i?", new Integer(UID).toString());
+		results.next();
+		return results.getInt("Points");
+	}
+
+	/**
+	 * Searches in the table for the users email.
+	 * 
+	 * @param UID
+	 * @return String email of the user.
+	 * @throws SQLException
+	 */
+	public String getEmail(int UID) throws SQLException {
+		ResultSet results = searchProfile(UID);
+		results.next();
+		return results.getString("Email");
+	}
+
+	/**
+	 * Searches for the existence of the user.
+	 * 
+	 * @param UID
+	 * @return <boolean>boolean true for exists false for doesn't exists.
+	 * @throws SQLException
+	 */
+	public Boolean hasUser(int UID) throws SQLException {
+		ResultSet results = searchProfile(UID);
+		return results.next();
+	}
+
+	/**
+	 * Searches in the table for the users job.
+	 * 
+	 * @param UID
+	 * @return Stringthe users job.
+	 * @throws SQLException
+	 */
+	public String getJob(int UID) throws SQLException {
+		ResultSet results = searchProfile(UID);
+		results.next();
+		return results.getString("Job");
+	}
+
+	/**
+	 * Searches in the table for the users phone number.
+	 * 
+	 * @param UID
+	 * @return String containing the users phone number.
+	 * @throws SQLException
+	 */
+	public String getPhoneNumber(int UID) throws SQLException {
+		ResultSet results = searchProfile(UID);
+		results.next();
+		return results.getString("PhoneNumber");
+	}
+
 	/* ==========The Writers=========== */
+
+	/* ===========Utility============ */
+
+	public int getProfileAmount() throws NumberFormatException, SQLException {
+		ResultSet results = sqlBase.fetchQuery("SELECT COUNT(*) AS Length FROM Profile;");
+		results.next();
+		return new Integer(results.getString("Length"));
+
+	}
+
+	public int getUserListSize(int length) throws NumberFormatException, SQLException {
+		return (int) Math.ceil((double) getProfileAmount() / length);
+	}
 
 }

@@ -14,20 +14,20 @@ import java.sql.Statement;
  * @author Louis Hong
  * @version 1.0
  */
-public class SQLiteBase {
+public class SQLBase {
 
 	/**
 	 * The driver used to connect
 	 */
-	public static String sDriver;
+	public String sDriver;
 	/**
 	 * The location of the database
 	 */
-	public static String sUrl;
+	public String sUrl;
 	/**
 	 * The connector for the database.
 	 */
-	public static Connection con;
+	public Connection con;
 
 	/**
 	 * Initializes the database wrapper.
@@ -39,7 +39,7 @@ public class SQLiteBase {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public SQLiteBase(String stringDriver, String stringUrl)
+	public SQLBase(String stringDriver, String stringUrl)
 			throws InstantiationException, IllegalAccessException,
 			ClassNotFoundException, SQLException {
 
@@ -168,4 +168,6 @@ public class SQLiteBase {
 		stmt.executeUpdate();
 
 	}
+	
+	
 }

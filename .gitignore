@@ -46,3 +46,5 @@ Thumbs.db
 .project
 .settings/
 /bin
+
+lib/joda-time-2.2.properties

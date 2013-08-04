@@ -16,22 +16,28 @@ import java.util.logging.SimpleFormatter;
  * @author root
  * @version 1.0
  */
-public class DatabaseLocation {
+public class DatabaseURL {
 
-	private static Logger logger = Logger.getLogger(DatabaseLocation.class.getName());
-	private static String configDir = System.getenv("GravifileDBConnector");
+	private static Logger logger = Logger.getLogger(DatabaseURL.class.getName());
+	private static String configDir = System.getenv("GravifileConfig");
 
 	static {
 		try {
-			if (configDir.equals(null)) {
+			if (configDir == (null)) {
 				configDir = "~/DBConnector";
 			}
-			Handler fileHandler = new FileHandler(configDir
-					+ "/DBConnector.log");
+			Handler fileHandler = new FileHandler(configDir  + "/database" + "/DBConnector.log");
 			fileHandler.setFormatter(new SimpleFormatter());
 			logger.addHandler(fileHandler);
 		} catch (Exception e) {
-			e.printStackTrace();
+			
+			logger.warning("No database config folder, setting up config folder!");
+			try {
+				createNewProperty();
+			} catch (Exception e1) {
+				logger.severe(e1.getMessage());
+				logger.severe("Failed to setup the log file. log file is disabled");
+			} 
 		}
 	}
 
@@ -60,8 +66,7 @@ public class DatabaseLocation {
 		try {
 			logger.info("Loading Database Properties from Config file");
 			// load a properties file
-			properties.load(new FileInputStream(configDir
-					+ "/database.properties"));
+			properties.load(new FileInputStream(configDir  + "/database" + "/database.properties"));
 			logger.info("Config successfully loaded!");
 
 			// get the property value and print it out
@@ -80,16 +85,15 @@ public class DatabaseLocation {
 		}
 	}
 
-	public static String getResponsesURL() throws IOException {
+	public static String getConversationURL() throws IOException {
 		Properties properties = new Properties();
 
 		try {
 			// load a properties file
-			properties.load(new FileInputStream(configDir
-					+ "/database.properties"));
+			properties.load(new FileInputStream(configDir  + "/database" + "/database.properties"));
 
 			// get the property value and print it out
-			return properties.getProperty("ResponsesURL");
+			return properties.getProperty("GravityAIURL");
 		} catch (IOException ex) {
 			try {
 				logger.warning("Config file failed to load, maybe the file does not exist.");
@@ -100,7 +104,7 @@ public class DatabaseLocation {
 				throw new IOException("Failed to create Properties Config!");
 			}
 			logger.info("Config file created!");
-			return getResponsesURL();
+			return getConversationURL();
 		}
 	}
 
@@ -108,21 +112,19 @@ public class DatabaseLocation {
 		Properties properties = new Properties();
 
 		// set the properties value
-		properties.setProperty("ProfileURL", "jdbc:sqlite:F:\\OIC\\OICWebsite\\database\\profiles.sqlite");
-		properties.setProperty("ResponsesURL", "jdbc:sqlite:F:\\OIC\\OICWebsite\\database\\response.sqlite");
+		properties.setProperty("ProfileURL", "jdbc:mysql://localhost:3306/GravifileDatabase?user=&password=&characterEncoding=UTF-8");
+		properties.setProperty("GravityAIURL", "jdbc:mysql://localhost:3306/GravityAI?user=&password=&characterEncoding=UTF-8");
 		logger.info("Config Properties: \n" + properties.toString());
 
 		// save properties to project config folder
 		logger.info("Checking if Config directory exists or not.");
-		File configFolder = new File(configDir);
+		File configFolder = new File(configDir + "/database");
 		if (!configFolder.exists()) {
 			configFolder.mkdir();
 			logger.info("Config directory doesn't exist, created new one!");
 		}
-		properties.store(new FileOutputStream(configDir
-				+ "/database.properties"), null);
-		logger.info("The Config has been created, properties has been stored at file :\n"
-				+ configFolder.getAbsolutePath());
+		properties.store(new FileOutputStream(configDir  + "/database" + "/database.properties"), null);
+		logger.info("The Config has been created, properties has been stored at file :\n" + configFolder.getAbsolutePath());
 
 	}
 
