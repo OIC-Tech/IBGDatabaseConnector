@@ -9,5 +9,4 @@ import org.junit.Test;
 import com.louishong.database.SQLBase;
 
 public class _TestSQLBase {
-
 }

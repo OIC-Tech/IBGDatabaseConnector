@@ -77,15 +77,15 @@ public class ProfileWrapper {
 		}
 		return sqlBase.fetchQuery(String.format("SELECT * FROM Profile LIMIT %s, %s", length * (page - 1), length));
 	}
-	
+
 	public ResultSet searchProfile(String name) throws SQLException {
-		return searchProfile(name);
+		return sqlBase.fetchQueryPrepared("SELECT * FROM Profile WHERE Name=?", name);
 	}
 
 	public ResultSet searchProfile(int UID) throws SQLException {
-		return sqlBase.fetchQueryPrepared("SELECT * FROM Profile WHERE UID=i?", new Integer(UID).toString());
+		return sqlBase.fetchQueryPrepared("SELECT * FROM Profile WHERE UID=?", new Integer(UID).toString());
 	}
-	
+
 	/**
 	 * Searches and returns the points a user has in the table.
 	 * 
@@ -188,7 +188,7 @@ public class ProfileWrapper {
 	 * @throws UnsupportedEncodingException
 	 */
 	public int getPoints(int UID) throws SQLException, UnsupportedEncodingException {
-		ResultSet results = sqlBase.fetchQueryPrepared("SELECT * FROM Profile WHERE UID=i?", new Integer(UID).toString());
+		ResultSet results = sqlBase.fetchQueryPrepared("SELECT * FROM Profile WHERE UID=?", new Integer(UID).toString());
 		results.next();
 		return results.getInt("Points");
 	}
@@ -257,6 +257,12 @@ public class ProfileWrapper {
 
 	public int getUserListSize(int length) throws NumberFormatException, SQLException {
 		return (int) Math.ceil((double) getProfileAmount() / length);
+	}
+
+	public String getName(int UID) throws SQLException {
+		ResultSet results = sqlBase.fetchQueryPrepared("SELECT * FROM Profile WHERE UID=?", new Integer(UID).toString());
+		results.next();
+		return results.getString("Name");
 	}
 
 }

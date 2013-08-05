@@ -165,7 +165,7 @@ public class WeixinShiftWrapper {
 		statement.setDate(3, new Date(oldDate.toDate().getTime()));
 		statement.executeUpdate();
 	}
-	
+
 	/**
 	 * Loops through the whole database checking for outdated shift dates. If an
 	 * outdated shift is spotted then the method will add the period to the
@@ -200,6 +200,19 @@ public class WeixinShiftWrapper {
 
 			System.out.println("......No Changes");
 		}
+	}
+
+	public ArrayList<Integer> getTodaysShifts() throws SQLException {
+		Connection con = sqlBase.con;
+		PreparedStatement statement = con.prepareStatement("SELECT * FROM WeixinShift WHERE NextShift=?");
+		statement.setDate(1, new Date(new LocalDate().toDate().getTime()));
+		ResultSet results = statement.executeQuery();
+		ArrayList<Integer> UIDs = new ArrayList<Integer>();
+		while (results.next()) {
+			UIDs.add(results.getInt("UID"));
+		}
+		return UIDs;
+
 	}
 
 }

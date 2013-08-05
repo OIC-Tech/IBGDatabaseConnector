@@ -44,6 +44,11 @@ public class _TestWeixinShiftWrapper {
 	}
 	
 	@Test
+	public void testGetTodaysShifts () throws SQLException {
+		shiftWrapper.getTodaysShifts();
+	}
+	
+	@Test
 	public void testUpdateDatabase() throws SQLException { 
 		shiftWrapper.updateDatebase();
 	}
