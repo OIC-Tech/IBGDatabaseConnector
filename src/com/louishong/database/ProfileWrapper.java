@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+
 /**
  * A wrapper for the connection with Profile table.
  * 
@@ -78,8 +79,8 @@ public class ProfileWrapper {
 		return sqlBase.fetchQuery(String.format("SELECT * FROM Profile LIMIT %s, %s", length * (page - 1), length));
 	}
 
-	public ResultSet searchProfile(String name) throws SQLException {
-		return sqlBase.fetchQueryPrepared("SELECT * FROM Profile WHERE Name=?", name);
+	public ResultSet searchProfile(String userName) throws SQLException {
+		return sqlBase.fetchQueryPrepared("SELECT * FROM Profile WHERE UserName=?", userName);
 	}
 
 	public ResultSet searchProfile(int UID) throws SQLException {
@@ -87,96 +88,41 @@ public class ProfileWrapper {
 	}
 
 	/**
-	 * Searches and returns the points a user has in the table.
+	 * Searches for the existence of the user.
 	 * 
-	 * @param name
-	 * @return String of the points the user has.
-	 * @throws SQLException
-	 * @throws UnsupportedEncodingException
-	 */
-	public int getPoints(String name) throws SQLException, UnsupportedEncodingException {
-		ResultSet results = searchProfile(name);
-		results.next();
-		return results.getInt("Points");
-	}
-
-	/**
-	 * Searches in the table for the users email.
-	 * 
-	 * @param name
-	 * @return String email of the user.
+	 * @param userName
+	 * @return <boolean>boolean true for exists false for doesn't exists.
 	 * @throws SQLException
 	 */
-	public String getEmail(String name) throws SQLException {
-		ResultSet results = searchProfile(name);
-		results.next();
-		return results.getString("Email");
+	public Boolean hasUser(String userName) throws SQLException {
+		ResultSet results = searchProfile(userName);
+		return results.next();
 	}
 
 	/**
 	 * Searches for the existence of the user.
 	 * 
-	 * @param name
+	 * @param UID
 	 * @return <boolean>boolean true for exists false for doesn't exists.
 	 * @throws SQLException
 	 */
-	public Boolean hasUser(String name) throws SQLException {
-		ResultSet results = searchProfile(name);
+	public Boolean hasUser(int UID) throws SQLException {
+		ResultSet results = searchProfile(UID);
 		return results.next();
 	}
 
 	/**
-	 * Searches in the table for the users job.
+	 * Searches and returns the points a user has in the table.
 	 * 
-	 * @param name
-	 * @return Stringthe users job.
+	 * @param userName
+	 * @return String of the points the user has.
 	 * @throws SQLException
+	 * @throws UnsupportedEncodingException
 	 */
-	public String getJob(String name) throws SQLException {
-		ResultSet results = searchProfile(name);
+	public int getPoints(String userName) throws SQLException, UnsupportedEncodingException {
+		ResultSet results = searchProfile(userName);
 		results.next();
-		return results.getString("Job");
-	}
-
-	/**
-	 * Searches in the table for the users phone number.
-	 * 
-	 * @param name
-	 * @return String containing the users phone number.
-	 * @throws SQLException
-	 */
-	public String getPhoneNumber(String name) throws SQLException {
-		ResultSet results = searchProfile(name);
-		results.next();
-		return results.getString("PhoneNumber");
-	}
-
-	/**
-	 * Gives a 3 dimensional Map of the Profiles table.
-	 * 
-	 * @return Map<String, ArralyList<String>> with the names in the key and all
-	 *         the information in the ArrayList.
-	 * @throws SQLException
-	 * @throws InvalidParameterException
-	 */
-	public Map<String, ArrayList<String>> getUserList(int length, int page) throws InvalidParameterException, SQLException {
-		ResultSet results = getAllProfiles(length, page);
-
-		Map<String, ArrayList<String>> mapResults = new HashMap<String, ArrayList<String>>();
-		ArrayList<String> data = new ArrayList<String>();
-		while (results.next()) {
-			data.clear();
-			data.add(results.getString("Job"));
-			data.add(results.getString("Email"));
-			data.add(results.getString("Points"));
-			data.add(results.getString("PhoneNumber"));
-			if (mapResults.containsKey(results.getString("Name"))) {
-				mapResults.put(results.getString("Name") + "_" + new Random().nextInt(), new ArrayList<String>(data));
-			}
-			mapResults.put(results.getString("Name"), new ArrayList<String>(data));
-		}
-		return mapResults;
-
+		return results.getInt("Points");
 	}
 
 	/**
@@ -188,9 +134,22 @@ public class ProfileWrapper {
 	 * @throws UnsupportedEncodingException
 	 */
 	public int getPoints(int UID) throws SQLException, UnsupportedEncodingException {
-		ResultSet results = sqlBase.fetchQueryPrepared("SELECT * FROM Profile WHERE UID=?", new Integer(UID).toString());
+		ResultSet results = searchProfile(UID);
 		results.next();
 		return results.getInt("Points");
+	}
+
+	/**
+	 * Searches in the table for the users email.
+	 * 
+	 * @param userName
+	 * @return String email of the user.
+	 * @throws SQLException
+	 */
+	public String getEmail(String userName) throws SQLException {
+		ResultSet results = searchProfile(userName);
+		results.next();
+		return results.getString("Email");
 	}
 
 	/**
@@ -207,15 +166,16 @@ public class ProfileWrapper {
 	}
 
 	/**
-	 * Searches for the existence of the user.
+	 * Searches in the table for the users job.
 	 * 
-	 * @param UID
-	 * @return <boolean>boolean true for exists false for doesn't exists.
+	 * @param userName
+	 * @return Stringthe users job.
 	 * @throws SQLException
 	 */
-	public Boolean hasUser(int UID) throws SQLException {
-		ResultSet results = searchProfile(UID);
-		return results.next();
+	public String getJob(String userName) throws SQLException {
+		ResultSet results = searchProfile(userName);
+		results.next();
+		return results.getString("Job");
 	}
 
 	/**
@@ -234,6 +194,19 @@ public class ProfileWrapper {
 	/**
 	 * Searches in the table for the users phone number.
 	 * 
+	 * @param userName
+	 * @return String containing the users phone number.
+	 * @throws SQLException
+	 */
+	public String getPhoneNumber(String userName) throws SQLException {
+		ResultSet results = searchProfile(userName);
+		results.next();
+		return results.getString("PhoneNumber");
+	}
+
+	/**
+	 * Searches in the table for the users phone number.
+	 * 
 	 * @param UID
 	 * @return String containing the users phone number.
 	 * @throws SQLException
@@ -244,9 +217,33 @@ public class ProfileWrapper {
 		return results.getString("PhoneNumber");
 	}
 
-	/* ==========The Writers=========== */
+	/**
+	 * Gives a 3 dimensional Map of the Profiles table.
+	 * 
+	 * @return Map<String, ArralyList<String>> with the userNames in the key and
+	 *         all the information in the ArrayList.
+	 * @throws SQLException
+	 * @throws InvalidParameterException
+	 */
+	public Map<String, ArrayList<String>> getUserList(int length, int page) throws InvalidParameterException, SQLException {
+		ResultSet results = getAllProfiles(length, page);
 
-	/* ===========Utility============ */
+		Map<String, ArrayList<String>> mapResults = new HashMap<String, ArrayList<String>>();
+		ArrayList<String> data = new ArrayList<String>();
+		while (results.next()) {
+			data.clear();
+			data.add(results.getString("Job"));
+			data.add(results.getString("Email"));
+			data.add(results.getString("Points"));
+			data.add(results.getString("PhoneNumber"));
+			if (mapResults.containsKey(results.getString("UserName"))) {
+				mapResults.put(results.getString("UserName") + "_" + new Random().nextInt(), new ArrayList<String>(data));
+			}
+			mapResults.put(results.getString("UserName"), new ArrayList<String>(data));
+		}
+		return mapResults;
+
+	}
 
 	public int getProfileAmount() throws NumberFormatException, SQLException {
 		ResultSet results = sqlBase.fetchQuery("SELECT COUNT(*) AS Length FROM Profile;");
@@ -259,10 +256,107 @@ public class ProfileWrapper {
 		return (int) Math.ceil((double) getProfileAmount() / length);
 	}
 
-	public String getName(int UID) throws SQLException {
-		ResultSet results = sqlBase.fetchQueryPrepared("SELECT * FROM Profile WHERE UID=?", new Integer(UID).toString());
+	public String getNickName(String userName) throws SQLException {
+		ResultSet results = searchProfile(userName);
 		results.next();
-		return results.getString("Name");
+		return results.getString("NickName");
+	}
+
+	public String getNickName(int UID) throws SQLException {
+		ResultSet results = searchProfile(UID);
+		results.next();
+		return results.getString("NickName");
+	}
+
+	public String getUserName(String userName) throws SQLException {
+		ResultSet results = searchProfile(userName);
+		results.next();
+		return results.getString("UserName");
+	}
+
+	public String getUserName(int UID) throws SQLException {
+		ResultSet results = searchProfile(UID);
+		results.next();
+		return results.getString("UserName");
+	}
+
+	public byte[] getPasswordHash(String userName) throws SQLException {
+		ResultSet results = searchProfile(userName);
+		results.next();
+		return results.getBytes("PasswordHash");
+	}
+
+	public byte[] getPasswordHash(int UID) throws SQLException {
+		ResultSet results = searchProfile(UID);
+		results.next();
+		return results.getBytes("PasswordHash");
+	}
+	
+	public String getHashedPassword(String username) throws SQLException {
+		ResultSet results = searchProfile(username);
+		results.next();
+		return results.getString("HashedPassword");
+		
+	}
+
+	public String getHashedPassword(int UID) throws SQLException {
+		ResultSet results = searchProfile(UID);
+		results.next();
+		return results.getString("HashedPassword");
+	}
+
+	public boolean verifyPassword(String username, String password) throws SQLException {
+		return BCrypt.checkpw(password, getHashedPassword(username));
+	}
+	
+	public boolean hasAlphaPerm(String username) throws SQLException {
+		ResultSet results = searchProfile(username);
+		results.next();
+		return results.getBoolean("AlphaPerm");
+	}
+
+	public boolean hasAlphaPerm(int UID) throws SQLException {
+		ResultSet results = searchProfile(UID);
+		results.next();
+		return results.getBoolean("AlphaPerm");
+	}
+
+	/* ==========The Writers=========== */
+
+	public void addUser(String username, String password, String nickName, String job, String email, int points, String phonenumber) throws SQLException {
+		String encryptPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+		sqlBase.executeQueryPrepared("INSERT INTO Profile (UserName, HashedPassword, NickName, Job, Email, Points, PhoneNumber) VALUES (?, ?, ?, ?, ?, ?, ?)", username, encryptPassword, nickName, job, email, new Integer(points).toString(), phonenumber);		
+	}
+
+	public void addUser(int UID, String username, String password, String nickName, String job, String email, int points, String phonenumber) throws SQLException {
+		String encryptPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+		sqlBase.executeQueryPrepared("INSERT INTO Profile (UID, UserName, HashedPassword, NickName, Job, Email, Points, PhoneNumber) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", new Integer(UID).toString() , username, encryptPassword, nickName, job, email, new Integer(points).toString(), phonenumber);		
+	}
+
+	public void removeUser(String username) throws SQLException {
+		sqlBase.executeQueryPrepared("DELETE * WHERE UserName=?", new Integer(username).toString());
+
+	}
+
+	public void removeUser(int UID) throws SQLException {
+		sqlBase.executeQueryPrepared("DELETE * WHERE UID=?", new Integer(UID).toString());
+
+	}
+
+	public void giveAlphaPerm(String username) throws SQLException {
+		sqlBase.executeQueryPrepared("UPDATE Profile SET AlphaPerm=1 WHERE UserName=?", username);
+	}
+
+	public void giveAlphaPerm(int UID) throws SQLException {
+		sqlBase.executeQueryPrepared("UPDATE Profile SET AlphaPerm=0 WHERE UID=?", new Integer(UID).toString());
+	}
+
+	public void recordIP(String username, String IP) throws SQLException {
+		sqlBase.executeQueryPrepared("UPDATE Profile SET LastIP=? WHERE UserName=?", IP, username);
+	}
+
+	public void recordIP(int UID, String IP) throws SQLException {
+		sqlBase.executeQueryPrepared("UPDATE Profile SET LastIP=? WHERE UID=?", IP, new Integer(UID).toString());
 	}
 
 }

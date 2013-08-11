@@ -85,28 +85,39 @@ public class GravifileAIDatabase {
 	}
 
 	/**
-	 * Cuts the connection with the database.
-	 * 
+	 * @param input
+	 * @param response
+	 * @param dynamic
+	 * @param readonly
+	 * @param force
+	 * @param author
 	 * @throws SQLException
 	 */
-
-	/* ==========The Writers=========== */
-
-	public void addConversation(String input, String response, boolean dynamic) throws SQLException {
-
+	public void addConversation(String input, String response, boolean dynamic, boolean readonly, boolean force, String author) throws SQLException {
 		ResultSet results = sqlBase.fetchQueryPrepared("SELECT * FROM Conversation WHERE Inputs=? AND Responses=? AND Dynamic=b?", input, response, dynamic ? "1" : "0");
-		if (results.next()) {
-			if (results.getBoolean("readonly")) {
-				throw new SQLException("This conversation is read only");
+		results.next();
+		if (!force) {
+			try {
+				if (results.getBoolean("readonly")) {
+					throw new SQLException("This conversation is read only");
+				}
+			} catch (Exception e) {
 			}
 		}
-		sqlBase.executeQueryPrepared("INSERT INTO Conversation (Inputs, Responses, Dynamic) VALUES (?, ?, b?)", input, response, dynamic ? "1" : "0");
+		sqlBase.executeQueryPrepared("INSERT INTO Conversation (Inputs, Responses, Dynamic, readonly, author) VALUES (?, ?, b?, b?, ?)", input, response, dynamic ? "1" : "0", readonly ? "1" : "0", author);
 	}
 
-	public void deleteConversation(String input, String response, boolean dynamic) throws SQLException {
-
+	/**
+	 * @param input
+	 * @param response
+	 * @param dynamic
+	 * @param force
+	 * @throws SQLException
+	 */
+	public void deleteConversation(String input, String response, boolean dynamic, boolean force) throws SQLException, NullPointerException {
 		ResultSet results = sqlBase.fetchQueryPrepared("SELECT * FROM Conversation WHERE Inputs=? AND Responses=? AND Dynamic=b?", input, response, dynamic ? "1" : "0");
-		if (results.next()) {
+		results.next();
+		if (!force) {
 			if (results.getBoolean("readonly")) {
 				throw new SQLException("This conversation is read only");
 			}
@@ -114,32 +125,49 @@ public class GravifileAIDatabase {
 		sqlBase.executeQueryPrepared("DELETE FROM Conversation WHERE Inputs=? AND Responses=? AND Dynamic=b?", input, response, dynamic ? "1" : "0");
 	}
 
-	public void addConversation(String input, String response, boolean dynamic, boolean readonly, boolean force) throws SQLException {
-		ResultSet results = sqlBase.fetchQueryPrepared("SELECT * FROM Conversation WHERE Inputs=? AND Responses=? AND Dynamic=b?", input, response, dynamic ? "1" : "0");
-		if (results.next() && !force) {
+	/**
+	 * @param username
+	 * @throws SQLException
+	 */
+	public void deleteConversationByAuthor(String username) throws SQLException {
+		ResultSet results = sqlBase.fetchQueryPrepared("SELECT * FROM Conversation WHERE author=?", username);
+		while (results.next()) {
 			if (results.getBoolean("readonly")) {
 				throw new SQLException("This conversation is read only");
 			}
 		}
-		sqlBase.executeQueryPrepared("INSERT INTO Conversation (Inputs, Responses, Dynamic, readonly) VALUES (?, ?, b?, b?)", input, response, dynamic ? "1" : "0", readonly ? "1" : "0");
-	}
-
-	public void deleteConversation(String input, String response, boolean dynamic, boolean force) throws SQLException {
-		ResultSet results = sqlBase.fetchQueryPrepared("SELECT * FROM Conversation WHERE Inputs=? AND Responses=? AND Dynamic=b?", input, response, dynamic ? "1" : "0");
-		if (results.next() && !force) {
-			if (results.getBoolean("readonly")) {
-				throw new SQLException("This conversation is read only");
-			}
-		}
-		sqlBase.executeQueryPrepared("DELETE FROM Conversation WHERE Inputs=? AND Responses=? AND Dynamic=b?", input, response, dynamic ? "1" : "0");
+		sqlBase.executeQueryPrepared("DELETE FROM Conversation WHERE author=?", username);
 	}
 
 	/* ==========Utilities=========== */
+	/**
+	 * @param input
+	 * @param response
+	 * @param dynamic
+	 * @return
+	 * @throws SQLException
+	 */
 	public boolean isUnique(String input, String response, boolean dynamic) throws SQLException {
 		ResultSet results = sqlBase.fetchQueryPrepared("SELECT * FROM Conversation WHERE Inputs=? AND Responses=? AND Dynamic=?", input, response, dynamic ? "1" : "0");
 		return !results.next();
 	}
 
+	/**
+	 * @param input
+	 * @param response
+	 * @param dynamic
+	 * @return
+	 * @throws SQLException
+	 */
+	public boolean isReadonly(String input, String response, boolean dynamic) throws SQLException {
+		ResultSet results = sqlBase.fetchQueryPrepared("SELECT * FROM Conversation WHERE Inputs=? AND Responses=? AND Dynamic=?", input, response, dynamic ? "1" : "0");
+		results.next();
+		return results.getBoolean("readonly");
+	}
+
+	/**
+	 * @throws SQLException
+	 */
 	public void cutConnection() throws SQLException {
 		sqlBase.cutConnection();
 	}

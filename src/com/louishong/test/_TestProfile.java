@@ -1,12 +1,10 @@
 package com.louishong.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
-import java.util.*;
-import java.util.logging.Logger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,25 +34,25 @@ public class _TestProfile {
 	@Test
 	public void testGetEmail() throws SQLException {
 		assertTrue("Email did not match", "honglouis@outlook.com".equals(pw.getEmail(1)));
-		assertTrue("Email Name did not match", "honglouis@outlook.com".equals(pw.getEmail("刘加华")));
+		assertTrue("Email Name did not match", "honglouis@outlook.com".equals(pw.getEmail("loolo78")));
 	}
 
 	@Test
 	public void testJob() throws SQLException {
 		assertTrue("Job did not match", pw.getJob(1).equals("服务器管理员/程序员"));
-		assertTrue("Job did not match", pw.getJob("刘加华").equals("服务器管理员/程序员"));
+		assertTrue("Job did not match", pw.getJob("loolo78").equals("服务器管理员/程序员"));
 	}
 	
 	@Test
 	public void testPhoneNumber() throws SQLException {
 		assertTrue("Phone number did not match", pw.getPhoneNumber(1).equals("13910028039"));
-		assertTrue("Phone number did not match", pw.getPhoneNumber("刘加华").equals("13910028039"));
+		assertTrue("Phone number did not match", pw.getPhoneNumber("loolo78").equals("13910028039"));
 	}
 	
 	@Test
 	public void testPoints() throws UnsupportedEncodingException, SQLException {
 		assertTrue("Points did not match", new Integer(24).equals(pw.getPoints(1)));
-		assertTrue("Points did not match", new Integer(24).equals(pw.getPoints("刘加华")));
+		assertTrue("Points did not match", new Integer(24).equals(pw.getPoints("loolo78")));
 	}
 	
 	@Test
@@ -65,7 +63,13 @@ public class _TestProfile {
 	@Test
 	public void testHasUser() throws SQLException {
 		assertTrue("UID=1 exists, but has user returned false", pw.hasUser(1));
-		assertTrue("UID=1 exists, but has user returned false", pw.hasUser("刘加华"));		
+		assertTrue("UID=1 exists, but has user returned false", pw.hasUser("loolo78"));		
 	}
+	
+//	@Test
+//	public void testPasswordVerification() throws SQLException {
+//		pw.addUser("IamHD", Passwords.hash("losspass".toCharArray(), Passwords.getNextSalt()), "我不是刘加华", "", "", 0	, "18610599560");
+//		assertTrue(pw.verifyPassword("loolo78", "losspass"));
+//	}
 	
 }

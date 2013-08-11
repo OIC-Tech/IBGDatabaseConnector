@@ -1,13 +1,10 @@
 package com.louishong.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.sql.Date;
+import java.sql.SQLException;
 
-
-import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 

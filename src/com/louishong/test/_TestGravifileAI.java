@@ -33,27 +33,21 @@ public class _TestGravifileAI {
 
 	@Test
 	public void testAddConversation() throws SQLException {
-		aiDatabase.addConversation("TESTING_01", "GINTSET_01", false);
+		aiDatabase.addConversation("TESTING_01", "GINTSET_01", false, false, false, "IamHD");
 		assertFalse("Failed to add Conversion", aiDatabase.isUnique("TESTING_01", "GINTSET_01", false));
-
-		aiDatabase.addConversation("TESTING_02", "GINTSET_02", false, true, false);
-		assertFalse(aiDatabase.isUnique("TESTING_02", "GINTSET_02", false));
 	}
 
 	@Test
 	public void testSearchResonse() throws SQLException {
-		ResultSet results = aiDatabase.searchResponse("你好");
+		ResultSet results = aiDatabase.searchResponse("我去");
 		results.next();
-		assertTrue("Couldn't find the response to the conversation", results.getString("Responses").equals("你好呀~"));
+		assertTrue("Couldn't find the response to the conversation", results.getString("Responses").equals("怎么样,厉害吧!"));
 	}
 
 	@Test
 	public void testDeleteConversation() throws SQLException {
-		aiDatabase.deleteConversation("TESTING_01", "GINTSET_01", false);
+		aiDatabase.deleteConversation("TESTING_01", "GINTSET_01", false, false);
 		assertTrue("Failed to delete Conversion", aiDatabase.isUnique("TESTING_01", "GINTSET_01", false));
-
-		aiDatabase.deleteConversation("TESTING_02", "GINTSET_02", false, true);
-		assertTrue("Failed to delete Conversion", aiDatabase.isUnique("TESTING_02", "GINTSET_02", false));
 	}
 
 }
