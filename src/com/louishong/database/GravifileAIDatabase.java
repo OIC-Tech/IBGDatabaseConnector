@@ -98,7 +98,7 @@ public class GravifileAIDatabase {
 		results.next();
 		if (!force) {
 			try {
-				if (results.getBoolean("readonly")) {
+				if (results.getBoolean("Readonly")) {
 					throw new SQLException("This conversation is read only");
 				}
 			} catch (Exception e) {
@@ -118,7 +118,7 @@ public class GravifileAIDatabase {
 		ResultSet results = sqlBase.fetchQueryPrepared("SELECT * FROM Conversation WHERE Inputs=? AND Responses=? AND Dynamic=b?", input, response, dynamic ? "1" : "0");
 		results.next();
 		if (!force) {
-			if (results.getBoolean("readonly")) {
+			if (results.getBoolean("Readonly")) {
 				throw new SQLException("This conversation is read only");
 			}
 		}
@@ -132,11 +132,11 @@ public class GravifileAIDatabase {
 	public void deleteConversationByAuthor(String username) throws SQLException {
 		ResultSet results = sqlBase.fetchQueryPrepared("SELECT * FROM Conversation WHERE author=?", username);
 		while (results.next()) {
-			if (results.getBoolean("readonly")) {
+			if (results.getBoolean("Readonly")) {
 				throw new SQLException("This conversation is read only");
 			}
 		}
-		sqlBase.executeQueryPrepared("DELETE FROM Conversation WHERE author=?", username);
+		sqlBase.executeQueryPrepared("DELETE FROM Conversation WHERE Author=?", username);
 	}
 
 	/* ==========Utilities=========== */
@@ -162,7 +162,7 @@ public class GravifileAIDatabase {
 	public boolean isReadonly(String input, String response, boolean dynamic) throws SQLException {
 		ResultSet results = sqlBase.fetchQueryPrepared("SELECT * FROM Conversation WHERE Inputs=? AND Responses=? AND Dynamic=?", input, response, dynamic ? "1" : "0");
 		results.next();
-		return results.getBoolean("readonly");
+		return results.getBoolean("Readonly");
 	}
 
 	/**
